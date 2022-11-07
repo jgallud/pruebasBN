@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Pruebas de la Batalla naval</title>
+	<script src="./modelo.js"></script>
+</head>
+<body>
+	<script>
+		miJuego=new Juego();
+	    miJuego.agregarUsuario("pepe");
+	    miJuego.agregarUsuario("luis");
+	    let res=miJuego.jugadorCreaPartida("pepe");
+	    miJuego.jugadorSeUneAPartida("luis",res.codigo);
+	    let us1=miJuego.obtenerUsuario("pepe");
+	    let us2=miJuego.obtenerUsuario("luis");
+	    let partida=miJuego.obtenerPartida(res.codigo);
+	    us1.colocarBarco("b2",0,0); // 0,0 1,0
+	    us1.colocarBarco("b4",0,1); // 0,1 1,1 2,1 3,1
+	    us1.barcosDesplegados();
+	    us2.colocarBarco("b2",0,0);
+	    us2.colocarBarco("b4",0,1);
+	    us2.barcosDesplegados();
+
+	    us1.disparar(0,0);
+	    us1.disparar(1,0);
+
+	    us1.disparar(0,1);
+	    us1.disparar(1,1);
+	    us1.disparar(2,1);
+	    us1.disparar(3,1);
+	</script>
+</body>
+</html>
