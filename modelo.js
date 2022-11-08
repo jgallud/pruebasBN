@@ -148,7 +148,7 @@ function Usuario(nick,juego){
 	}
 	this.flotaHundida=function(){
 		for(var key in this.flota){
-			if (!this.flota[key].estado=="hundido"){
+			if (this.flota[key].estado!="hundido"){
 				return false;
 			}
 		}
@@ -162,9 +162,9 @@ function Partida(codigo,usr){
 	this.jugadores=[];
 	this.fase="inicial"; //new Inicial()
 	this.maxJugadores=2;
-	this.agregarJugador=function(usr){
+	this.agregarJugador=function(usr){ //this.puedeAgregarJugador
 		let res=this.codigo;
-		if (this.hayHueco()){
+		if (this.hayHueco()){ 
 			this.jugadores.push(usr);
 			console.log("El usuario "+usr.nick+" se une a la partida "+this.codigo);
 			usr.partida=this;
@@ -196,6 +196,12 @@ function Partida(codigo,usr){
 	}
 	this.esJugando=function(){
 		return this.fase=="jugando";
+	}
+	this.esDesplegando=function(){
+		return this.fase=="desplegando";
+	}
+	this.esFinal=function(){
+		return this.fase=="final";
 	}
 	this.flotasDesplegadas=function(){
 		for(i=0;i<this.jugadores.length;i++){
@@ -342,6 +348,14 @@ function Agua(){
 	this.obtenerEstado=function(){
 		return "agua";
 	}
+}
+
+function Inicial(){
+	this.nombre="inicial";
+}
+
+function Jugando(){
+	this.nombre="jugando";
 }
 
 //module.exports.Juego = Juego;

@@ -13,19 +13,12 @@ describe("El juego...", function() {
     partida=miJuego.obtenerPartida(res.codigo);
   });
 
-  it("inicialmente", function(){
+  it("comprobamos los nick de los usuarios", function(){
     expect(us1.nick).toEqual("pepe");
     expect(us2.nick).toEqual("luis");
-
-    //comprobar que los usuarios están en la partida
-    //comprobar que cada usuario tiene 2 tableros de 5x5
-    //que contienen agua (esAgua())
-    //comprobar que cada usuario tiene 1 flota de 2 barcos
-    //de tamaño 4 y 2
-    //comprobar que la partida esta en fase jugando
   });
 
-  it("luis y pepe están en la partida",function(){
+  it("comprobamos que luis y pepe están en la partida",function(){
     expect(partida.estoy("pepe")).toBeTrue();
     expect(partida.estoy("luis")).toBeTrue();
   });
@@ -46,22 +39,70 @@ describe("El juego...", function() {
   //  expect(us2.tableroPropio.casillas[0].length).toEqual(5);
     
     //habría que recorrer todo el tablero
-    expect(us1.tableroPropio.casillas[0][0].contiene.nombre).toEqual("agua");
+    expect(us1.tableroPropio.casillas[0][0].contiene.esAgua()).toBeTrue();
   });
 
   it("los dos jugadores tienen flota (2 barcos, tam 2 y 4)",function(){
     expect(us1.flota).toBeDefined();
     expect(us2.flota).toBeDefined();
     
-    expect(us1.flota.length).toEqual(2);
-    expect(us2.flota.length).toEqual(2);
+    expect(Object.keys(us1.flota).length).toEqual(2);
+    expect(Object.keys(us2.flota).length).toEqual(2);
     
-    expect(us1.flota[0].tam).toEqual(2);
-    expect(us1.flota[1].tam).toEqual(4);
+    expect(us1.flota["b2"].tam).toEqual(2);
+    expect(us1.flota["b4"].tam).toEqual(4);
   });
 
-  it("la partida está en fase jugando",function(){
-    expect(partida.esJugando()).toBeTrue();
-  })
+  it("la partida está en fase desplegando",function(){
+    expect(partida.esJugando()).toBeFalse();
+    expect(partida.esDesplegando()).toBeTrue();
+  });
 
+  describe("A jugar!",function(){
+    beforeEach(function(){
+      us1.colocarBarco("b2",0,0); // 0,0 1,0
+      us1.colocarBarco("b4",0,1); // 0,1 1,1 2,1 3,1
+      us1.barcosDesplegados();
+      us2.colocarBarco("b2",0,0);
+      us2.colocarBarco("b4",0,1);
+      us2.barcosDesplegados();
+    });
+
+    it("Comprobar que las flotas están desplegadas",function(){
+      expect(us1.todosDesplegados()).toBeTrue();
+      expect(us2.todosDesplegados()).toBeTrue();
+      expect(partida.flotasDesplegadas()).toBeTrue();
+    });
+
+    it("Comprobar jugada que Pepe gana",function(){
+      expect(partida.turno.nick).toEqual("pepe");
+      expect(us2.flota["b2"].estado).toEqual("intacto");
+      us1.disparar(0,0);
+      expect(us2.flota["b2"].estado).toEqual("tocado");
+      us1.disparar(1,0);
+      expect(us2.flota["b2"].estado).toEqual("hundido");
+      expect(us2.flota["b4"].estado).toEqual("intacto");
+      us1.disparar(0,1);
+      expect(us2.flota["b4"].estado).toEqual("tocado");
+      us1.disparar(1,1);
+      expect(us2.flota["b4"].estado).toEqual("tocado");
+      us1.disparar(2,1);
+      expect(us2.flota["b4"].estado).toEqual("tocado");
+      us1.disparar(3,1);
+      expect(us2.flota["b4"].estado).toEqual("hundido");
+      expect(partida.esFinal()).toBeTrue();
+      expect(us2.flotaHundida()).toBeTrue();
+      expect(us1.flotaHundida()).toBeFalse();
+    });
+
+    it("Comprobar el cambio de turno",function(){
+      us1.disparar(3,0);
+      expect(partida.turno.nick).toEqual("luis");
+    });
+
+    it("Comprobar que no deja disparar sin turno",function(){
+      us2.disparar(0,0);
+      expect(us1.flota["b2"].estado).toEqual("intacto");
+    });
+  });
 });
